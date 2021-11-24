@@ -1,2 +1,2 @@
-./Audio/*
-./Code_in_the_past/*
+/Audio/**
+/Code_in_the_past/**
