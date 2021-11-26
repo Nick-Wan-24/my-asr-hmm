@@ -107,12 +107,10 @@ classdef Util
             N = N_frame * (frameSize - overlapSize) + overlapSize;
             y = y(1 : N);
             x = zeros(frameSize, N_frame);
-            t_frame = zeros(2, N_frame);
             for i = 1 : N_frame
                 i1 = (i-1) * (frameSize - overlapSize) + 1;
                 i2 = i1 + frameSize - 1;
                 x(:, i) = y(i1 : i2);
-                t_frame(:, i) = [i1; i2] / fs;
             end
             
             % EPD
@@ -131,7 +129,7 @@ classdef Util
             W = repmat(W', 1, N_frame);
             x = x .* W;
             
-            % energy of FFT and log
+            % energy of FFT
             x = abs(fft(x)).^2 / frameSize;
             
             % Mel frequencies
@@ -187,7 +185,7 @@ classdef Util
             feats = [mfcc; dmfcc; d2mfcc];
         end
 
-        % judge Edit Distance between two vectors using dp method
+        % compute Edit Distance between two vectors using DP
         function dist = distance(guess, correct)
             N1 = length(guess);
             N2 = length(correct);

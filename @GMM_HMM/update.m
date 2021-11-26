@@ -27,8 +27,8 @@ for i = 1 : nStates
         gamma = obj.e_step(feats_all, i); % e_step
         obj = obj.m_step(feats_all, gamma, i); % m_step
     else % for single gaussian, MLE
-        model.mu{i} = mean(feats_all, 2);
-        model.sig{i} = mean((feats_all - repmat(model.mu{i},1,size(feats_all,2))).^2, 2);
+        obj.mu{i} = mean(feats_all, 2);
+        obj.sig{i} = mean((feats_all - repmat(obj.mu{i},1,size(feats_all,2))).^2, 2);
     end
 end
 

@@ -14,7 +14,7 @@ for i = 1 : nStates
 end
 logb = zeros(nStates, T);
 
-tmp1 = 0.5 * nDim * log(2*pi);
+tmp1 = -0.5 * nDim * log(2*pi);
 for i = 1 : nStates
     if nGaussian > 1
         for g = 1 : nGaussian
@@ -23,7 +23,7 @@ for i = 1 : nStates
             tmp2 = 0.5 * sum(log(sig));
             for t = 1 : T
                 ot = feats(:,t);
-                logbk{i}(g,t) = -tmp1 - tmp2 - 0.5*sum((ot-mu).^2./sig);
+                logbk{i}(g,t) = tmp1 - tmp2 - 0.5*sum((ot-mu).^2./sig);
             end
         end
         for t = 1 : T
@@ -35,7 +35,7 @@ for i = 1 : nStates
         tmp2 = 0.5 * sum(log(sig));
         for t = 1 : T
             ot = feats(:,t);
-            logb(i,t) = -tmp1 - tmp2 - 0.5*sum((ot-mu).^2./sig);
+            logb(i,t) = tmp1 - tmp2 - 0.5*sum((ot-mu).^2./sig);
         end
     end
 end

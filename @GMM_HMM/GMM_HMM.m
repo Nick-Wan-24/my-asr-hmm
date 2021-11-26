@@ -35,7 +35,7 @@ classdef GMM_HMM
         obj = update(obj, feats, states)
         gamma = e_step(obj, feats_all, i)
         obj = m_step(obj, feats_all, gamma, i)
-        normal = check(obj);
+        normal = check(obj)
         ll = compute_ll(obj, feats)
     end
 
