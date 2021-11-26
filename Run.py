@@ -5,12 +5,27 @@
 # or MLE(for single-GMM) + counting(for HMM)
 # continuous pred method: optimal states computation
 
-from GMM_HMM import GMM_HMM
-from Settings import Settings
-from Utils import *
+from Packets_py.GMM_HMM import GMM_HMM
+from Packets_py.Settings import Settings
+from Packets_py.Utils import *
 
 # loading parameters
+# for GMM-HMM model
 para = Settings()
+para.number_of_states = 4
+para.number_of_gaussian = 5
+para.number_of_iteration = 5
+
+# for MFCC computation
+para.dimension_of_vector = 39
+para.frameSize = 200
+para.overlapSize = 100
+para.N_mel_dct = 13
+para.N_mel = 26
+
+# Audio file
+para.training_file_directory = '.\\Audio\\train'
+para.testing_file_directory = '.\\Audio\\test'
 nWords = 10
 
 # train
