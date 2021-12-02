@@ -3,7 +3,6 @@ import random as rd
 import wave
 import os
 
-from numpy.core.numeric import zeros_like
 
 # assign T vectors to n states averagely and 
 # count MFCC number of each states 
@@ -77,7 +76,7 @@ def feature_extract(wavDir, para, i):
         if (file.startswith(str(i))):
             feats.append(mfcc(wavDir+'\\'+file, para))
     return feats
-    
+
 
 def mfcc(wavfile, para):
     frameSize = para.frameSize
@@ -175,3 +174,75 @@ def mfcc(wavfile, para):
     return feats
     
 
+def feature_extract_dnn(wavDir, para, i):
+    file_all = os.listdir(wavDir)
+    feats = []
+    for file in file_all:
+        if (file.startswith(str(i))):
+            feats.append(fbank(wavDir+'\\'+file, para))
+    return feats
+
+
+def fbank(wavfile, para):
+    frameSize = para.frameSize
+    overlapSize = para.overlapSize
+    N_mel = para.N_mel
+
+    # read data to x and fs (Hz)
+    f = wave.open(wavfile, "rb")
+    params = f.getparams()
+    fs, N = params[2:4]
+    tmp = f.readframes(N)
+    f.close()
+    x = np.frombuffer(tmp, dtype = np.int16)
+    x = x.astype(np.float64) / 32768 # range: -1 to 1
+
+    # pre-process
+    y = x
+    y[1:] = x[1:] - 0.97 * x[0:-1]
+
+    # segment
+    N_frame = int(np.floor((N-overlapSize) / (frameSize-overlapSize)))
+    N = N_frame * (frameSize-overlapSize) + overlapSize
+    y = y[:N]
+    x = np.zeros((N_frame, frameSize), dtype = np.float64)
+    for i in range(N_frame):
+        i1 = i * (frameSize - overlapSize)
+        x[i] = y[i1 : (i1+frameSize)]
+
+    # window
+    tmp = np.arange(1, frameSize+1)
+    W = 0.54 - 0.46*np.cos(2*np.pi*tmp / (frameSize-1))
+    x = np.multiply(x, W)
+
+    # energy of FFT
+    x = np.fft.fft(x, axis = 1)
+    x = np.abs(np.multiply(x,x)) / frameSize
+
+    # mel frequencies
+    f_max = 2595 * np.log10(1 + fs/2/700)
+    f_mel = np.linspace(0, f_max, N_mel+2)
+    f_mel = 700 * (np.power(10,f_mel/2595) - 1)
+
+    # mel filter
+    H = np.zeros((N_mel, frameSize), dtype = np.float64)
+    f = np.linspace(0, (frameSize-1)*(fs/frameSize), frameSize)
+    index = np.arange(N_mel+2, dtype = np.int16)
+    for i in range(0, N_mel+2):
+        index[i] = round(f_mel[i] / (fs/frameSize) + 1) - 1
+    for i in range(1, N_mel+1):
+        i_now = index[i]
+        i_pre = index[i-1]
+        i_next = index[i+1]
+        H[i-1][i_pre:i_now] = 2*(f[i_pre:i_now]-f[i_pre]) / (f[i_next]-f[i_pre]) \
+            / (f[i_now]-f[i_pre])
+        H[i-1][i_now:i_next+1] = 2*(f[i_next]-f[i_now:i_next+1]) \
+            / (f[i_next]-f[i_pre]) / (f[i_next]-f[i_now])
+
+    # mel coefficients
+    feats = np.zeros((N_frame, N_mel), dtype = np.float64)
+    for i in range(0, N_frame):
+        for j in range(0, N_mel):
+            feats[i][j] = np.log(np.dot(x[i], H[j]))
+    
+    return feats

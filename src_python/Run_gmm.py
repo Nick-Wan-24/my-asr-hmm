@@ -5,44 +5,47 @@
 # or MLE(for single-GMM) + counting(for HMM)
 # continuous pred method: optimal states computation
 
-from Packets_py.GMM_HMM import GMM_HMM
-from Packets_py.Settings import Settings
-from Packets_py.Utils import *
+from PKGS.GMM_HMM import GMM_HMM
+from PKGS.Settings import Settings
+from PKGS.Utils import *
 
 # loading parameters
 # for GMM-HMM model
 para = Settings()
-para.number_of_states = 4
-para.number_of_gaussian = 5
-para.number_of_iteration = 5
-
+para.number_of_states = 3
+para.number_of_gaussian = 3
+para.number_of_iteration = 2
 # for MFCC computation
 para.dimension_of_vector = 39
 para.frameSize = 200
 para.overlapSize = 100
 para.N_mel_dct = 13
 para.N_mel = 26
-
 # Audio file
-para.training_file_directory = '.\\Audio\\train'
-para.testing_file_directory = '.\\Audio\\test'
+para.training_file_directory = '..\\Audio\\train'
+para.testing_file_directory = '..\\Audio\\test'
 nWords = 10
 
+
 # train
+print("Start training: ")
 model_all = []
 i_word = 0
-while (i_word < nWords):
+for i_word in range(nWords):
     feats_train = feature_extract(para.training_file_directory, \
         para, i_word)
     model = GMM_HMM(para)
-    model.initialize(feats_train)
-    model.train(feats_train)
-    if (model.check() == False):
-        continue
+    while (1):
+        model.initialize(feats_train)
+        model.train(feats_train)
+        if (model.check() == True):
+            break
     model_all.append(model)
-    i_word += 1
+    print("model " + str(i_word) + " is trained")
+
 
 # test
+print("Start testing: ")
 Acc = np.zeros(nWords)
 for i in range(nWords):
     feats_test = feature_extract(para.testing_file_directory, \
@@ -57,14 +60,5 @@ for i in range(nWords):
         if (result[f] == i):
             correct += 1
     Acc[i] = correct / n_file * 100
-    print('Accuracy of '+str(i)+' is '+str(Acc[i])+'%')
-
-
-
-
-
-
-
-
-
+    print("Accuracy of " + str(i) + " is " + str(Acc[i]) + "%")
 

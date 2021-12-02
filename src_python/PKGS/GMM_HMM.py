@@ -1,5 +1,5 @@
 import numpy as np
-from Packets_py.Utils import *
+from PKGS.Utils import *
 
 class GMM_HMM:
 
@@ -122,7 +122,7 @@ class GMM_HMM:
             # compute optimal states
             tmp = np.zeros(T, dtype = int)
             tmp[-1] = np.argmax(logdelta[-1])
-            for t in range(T-1):
+            for t in range(T-1): # from T-2 to 0
                 t_now = T - 2 - t
                 tmp[t_now] = phi[tmp[t_now+1]][t_now+1]
             states.append(tmp)
@@ -156,8 +156,8 @@ class GMM_HMM:
                 for t in range(T):
                     logb[i][t] = logsumexp(logpik[i] + logbk[i][t])
             else:
-                mu = self.mu[i][0]
-                sig = self.sig[i][0]
+                mu = self.mu[i][0] + 1e-6
+                sig = self.sig[i][0] + 1e-6
                 tmp2 = 0.5 * np.sum(elog(sig))
                 for t in range(T):
                     ot = feats[t]

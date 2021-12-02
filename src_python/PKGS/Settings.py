@@ -14,8 +14,8 @@ class Settings:
         self.N_mel = 26
         
         # audio file
-        self.training_file_directory = '.\\Audio\\train'
-        self.testing_file_directory = '.\\Audio\\test'
+        self.training_file_directory = '..\\Audio\\train'
+        self.testing_file_directory = '..\\Audio\\test'
 
 
 
