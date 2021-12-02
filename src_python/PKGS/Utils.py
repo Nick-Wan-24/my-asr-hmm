@@ -240,9 +240,23 @@ def fbank(wavfile, para):
             / (f[i_next]-f[i_pre]) / (f[i_next]-f[i_now])
 
     # mel coefficients
-    feats = np.zeros((N_frame, N_mel), dtype = np.float64)
+    mfcc = np.zeros((N_frame, N_mel), dtype = np.float64)
     for i in range(0, N_frame):
         for j in range(0, N_mel):
-            feats[i][j] = np.log(np.dot(x[i], H[j]))
+            mfcc[i][j] = np.log(np.dot(x[i], H[j]))
+
+    # derivative
+    dmfcc = np.zeros_like(mfcc)
+    dmfcc[1:-1][:] = mfcc[2:][:] - mfcc[0:-2][:]
+    dmfcc[0][:] = mfcc[1][:] - mfcc[0][:]
+    dmfcc[-1][:] = mfcc[-1][:] - mfcc[-2][:]
+    d2mfcc = np.zeros_like(dmfcc)
+    d2mfcc[1:-1][:] = dmfcc[2:][:] - dmfcc[0:-2][:]
+    d2mfcc[0][:] = dmfcc[1][:] - dmfcc[0][:]
+    d2mfcc[-1][:] = dmfcc[-1][:] - dmfcc[-2][:]
+
+    # construct
+    feats = np.concatenate((mfcc,dmfcc), axis = 1)
+    feats = np.concatenate((feats,d2mfcc), axis = 1)
     
     return feats

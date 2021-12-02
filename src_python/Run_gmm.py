@@ -12,9 +12,9 @@ from PKGS.Utils import *
 # loading parameters
 # for GMM-HMM model
 para = Settings()
-para.number_of_states = 3
-para.number_of_gaussian = 3
-para.number_of_iteration = 2
+para.number_of_states = 4
+para.number_of_gaussian = 5
+para.number_of_iteration = 5
 # for MFCC computation
 para.dimension_of_vector = 39
 para.frameSize = 200

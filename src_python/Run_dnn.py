@@ -23,7 +23,7 @@ para.N_mel_dct = 13
 para.N_mel = 26
 # Audio file
 para.training_file_directory = '..\\Audio\\train'
-para.testing_file_directory = '..\\Audio\\test'
+para.testing_file_directory = '..\\Audio\\train'
 nWords = 10
 
 
