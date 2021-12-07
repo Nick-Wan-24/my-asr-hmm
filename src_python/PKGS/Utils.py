@@ -179,7 +179,8 @@ def feature_extract_dnn(wavDir, para, i):
     feats = []
     for file in file_all:
         if (file.startswith(str(i))):
-            feats.append(fbank(wavDir+'\\'+file, para))
+            feats_tmp = fbank(wavDir+'\\'+file, para)
+            feats.append(feats_tmp)
     return feats
 
 
@@ -259,4 +260,8 @@ def fbank(wavfile, para):
     feats = np.concatenate((mfcc,dmfcc), axis = 1)
     feats = np.concatenate((feats,d2mfcc), axis = 1)
     
+    return feats
+
+def normalize(feats, mu, sig):
+    feats = (feats - mu) / np.sqrt(sig+1e-6)
     return feats

@@ -33,16 +33,17 @@ nWords = 10;
 %% train
 model_all = cell(1, nWords);
 i_word = 0;
-while i_word < nWords
+for i_word = 0 : nWords-1
     feats_train = Util.feature_extract(training_file_directory, para, i_word);
     model = GMM_HMM(para);
-    model = model.init(feats_train);
-    model = model.train(feats_train);
-    if (~model.check()) % training error: NaN parameter
-        continue; % repeat training
+    while 1
+        model = model.init(feats_train);
+        model = model.train(feats_train);
+        if (model.check()) % training error: NaN parameter
+            break; % or, repeat training
+        end
     end
     model_all{i_word+1} = model;
-    i_word = i_word + 1; 
 end
 if if_continuous == 1
     model = GMM_HMM.joint(model_all);

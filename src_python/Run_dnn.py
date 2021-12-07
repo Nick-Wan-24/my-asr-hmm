@@ -12,9 +12,9 @@ from PKGS.Utils import *
 # loading parameters
 # for GMM-HMM model
 para = Settings()
-para.number_of_states = 4
-para.number_of_gaussian = 5
-para.number_of_iteration = 5
+para.number_of_states = 3
+para.number_of_gaussian = 4
+para.number_of_iteration = 10
 # for feature computation
 para.dimension_of_vector = 39
 para.frameSize = 200
@@ -44,6 +44,10 @@ for i in range(nWords):
     feats_test = feature_extract_dnn(para.testing_file_directory, \
         para, i)
     n_file = len(feats_test)
+    mu = np.loadtxt(".\\dnn_data\\"+str(i)+"mu.txt", delimiter=',')
+    sig = np.loadtxt(".\\dnn_data\\"+str(i)+"sig.txt", delimiter=',')
+    for f in range(n_file):
+        feats_test[f] = normalize(feats_test[f], mu, sig)
     ll = np.zeros((nWords, n_file))
     for j in range(nWords):
         ll[j] = model_all[j].compute_ll(feats_test)
